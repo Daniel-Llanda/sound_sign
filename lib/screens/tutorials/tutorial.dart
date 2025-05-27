@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'sing_along_adventure.dart';
 import 'sing_it_up.dart';
@@ -36,29 +37,50 @@ class TutorialsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF001F3F),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Tutorials'),
-        backgroundColor: Colors.lightBlue,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Welcome to Tutorials',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            SizedBox(height: 20),
-            _buildNavigationButton(
-              context,
-              'SING ALONG ADVENTURE',
-              SingAlongAdventure(),
-            ),
-            SizedBox(height: 10),
-            _buildNavigationButton(context, 'SING IT UP', SingItUp()),
-          ],
+        title: Text('Tutorials', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        backgroundColor: Colors.white.withOpacity(0.1),
+        elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(color: Colors.transparent),
+          ),
         ),
+      ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background image
+          Image.asset(
+            "assets/images/tutorialmenu.png", // Update path if different
+            fit: BoxFit.fill,
+          ),
+
+          // Foreground content
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Welcome to Tutorials',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                SizedBox(height: 20),
+                _buildNavigationButton(
+                  context,
+                  'SING ALONG ADVENTURE',
+                  SingAlongAdventure(),
+                ),
+                SizedBox(height: 10),
+                _buildNavigationButton(context, 'SING IT UP', SingItUp()),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

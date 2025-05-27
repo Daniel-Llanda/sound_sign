@@ -28,7 +28,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           Image.asset(
             'assets/images/settingsmenu.png', // ✅ Replace with your actual background image
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
           ),
           const Center(
             child: Text(
