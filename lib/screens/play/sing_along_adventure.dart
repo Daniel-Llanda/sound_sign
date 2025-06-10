@@ -5,14 +5,11 @@ class SingAlongAdventure extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // allows the body to go under the AppBar
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
-          'Sing Along Adventure',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: Text('Sing It Up', style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: Colors.white.withOpacity(0.1), // semi-transparent
+        backgroundColor: Colors.white.withOpacity(0.1),
         elevation: 0,
         foregroundColor: Colors.white,
         flexibleSpace: ClipRect(
@@ -34,7 +31,7 @@ class SingAlongAdventure extends StatelessWidget {
           // Foreground content
           Center(
             child: Text(
-              'Welcome to Sing Along Adventure!',
+              'Welcome to Sing It Up!',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,

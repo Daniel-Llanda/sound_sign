@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'login_screen.dart';
-// <-- Add this
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,11 +51,95 @@ class _LoadingScreenState extends State<LoadingScreen> {
       if (_progress < 1.0) {
         _simulateLoading();
       } else {
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => LoginScreen()));
+        _showTermsDialog();
       }
     });
+  }
+
+  void _showTermsDialog() {
+    bool _isChecked = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Color(0xFF001F3F),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              title: Text(
+                "Parental Consent Required",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Before continuing, please review the following terms:",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "This application is intended for minors and requires consent "
+                      "from a parent or guardian. By checking the box below, you confirm "
+                      "that you are a parent or legal guardian and that you grant permission "
+                      "for the child to use this app.",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _isChecked,
+                          onChanged: (value) {
+                            setState(() {
+                              _isChecked = value ?? false;
+                            });
+                          },
+                        ),
+                        Expanded(
+                          child: Text(
+                            "I am a parent or guardian and I give my consent.",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed:
+                      _isChecked
+                          ? () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (_) => LoginScreen()),
+                            );
+                          }
+                          : null,
+                  child: Text(
+                    "Continue",
+                    style: TextStyle(
+                      color: _isChecked ? Colors.blue : Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -98,10 +181,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
                     child: LinearProgressIndicator(
                       value: _progress,
                       minHeight: 10,
-                      backgroundColor: Colors.white24, // Subtle contrast
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.blue, // Standard blue progress
-                      ),
+                      backgroundColor: Colors.white24,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                     ),
                   ),
                 ),
