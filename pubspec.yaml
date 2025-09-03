@@ -33,6 +33,7 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   video_player: ^2.7.0
+  audioplayers: ^5.2.1 
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,8 +64,10 @@ flutter_icons:
 flutter:
   assets:
     - assets/images/
-    - assets/videos/
-
+    - assets/video/level1.mp4
+    - assets/video/level2.mp4
+    - assets/video/level3.mp4
+    - assets/sounds/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
