@@ -98,42 +98,53 @@ class SoundAwareness extends StatelessWidget {
 
         showDialog(
           context: context,
-          builder:
-              (ctx) => AlertDialog(
-                title: Text(info.title),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () async {
-                        await player.play(AssetSource(info.soundPath));
-                      },
-                      child: Image.asset(
-                        info.imagePath,
-                        width: 100,
-                        height: 100,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      "Meaning: ${info.meaning}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(info.description),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () async {
-                      await player.stop(); // stop sound when closing
-                      Navigator.pop(ctx);
-                    },
-                    child: const Text("Close"),
+          builder: (ctx) => AlertDialog(
+            title: Text(info.title),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Click the image to play the sound.",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                ),
+                const SizedBox(height: 10),
+
+                GestureDetector(
+                  onTap: () async {
+                    await player.play(AssetSource(info.soundPath));
+                  },
+                  child: Image.asset(
+                    info.imagePath,
+                    width: 100,
+                    height: 100,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Text(
+                  "Meaning: ${info.meaning}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 10),
+
+                Text(info.description),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await player.stop(); // stop sound when closing
+                  Navigator.pop(ctx);
+                },
+                child: const Text("Close"),
               ),
+            ],
+          ),
         ).then((_) async {
           // This handles cases where dialog is closed by tapping outside
           await player.stop();

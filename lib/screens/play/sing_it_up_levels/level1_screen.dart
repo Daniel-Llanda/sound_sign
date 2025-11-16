@@ -70,9 +70,9 @@ class _Level1ScreenState extends State<Level1Screen> {
                       flex: 1,
                       child: Center(
                         child: Image.asset(
-                          "assets/images/sign_language/${quizLetters[currentIndex]}.jpg",
-                          height: 170,
-                          width: 170,
+                          "assets/images/sign_language/${quizLetters[currentIndex].toLowerCase()}.png",
+                          height: 300,
+                          width: 300,
                           fit: BoxFit.contain,
                         ),
                       ),
