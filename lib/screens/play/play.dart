@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'sing_along_adventure.dart';
+import 'sign_language.dart';
 import 'sound_awareness.dart';
-import 'sing_it_up.dart';
+import 'sign_it_up.dart';
 
 class PlayScreen extends StatelessWidget {
   const PlayScreen({super.key});
@@ -83,20 +83,20 @@ class PlayScreen extends StatelessWidget {
               children: [
                 _buildMenuButton(
                   context,
-                  'SING ALONG\nADVENTURE',
-                  'assets/images/singer.png', // image path
+                  'Sign\nLanguage',
+                  'assets/images/sign_language.png', // image path
                   SingAlongAdventure(),
                 ),
                 _buildMenuButton(
                   context,
-                  'SOUND\nAWARENESS',
+                  'Sound\nAwareness',
                   'assets/images/music.png',
                   SoundAwareness(),
                 ),
                 _buildMenuButton(
                   context,
-                  'SING IT\nUP',
-                  'assets/images/karaoke.png',
+                  'Sign It\nUp',
+                  'assets/images/interpreter.png',
                   SingItUp(),
                 ),
               ],

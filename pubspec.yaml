@@ -70,6 +70,7 @@ flutter:
     - assets/video/level2.mp4
     - assets/video/level3.mp4
     - assets/sounds/
+    - assets/images/sign_tutorial/asl_img/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
