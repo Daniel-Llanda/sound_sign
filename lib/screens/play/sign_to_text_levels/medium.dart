@@ -346,26 +346,24 @@ class _MediumScreenState extends State<MediumScreen> {
             ),
           ),
           const SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                score = 0;
-                currentIndex = 0;
-                userInput = "";
-                showInstructions = true;
-                _generateQuiz();
-                _generateChoices();
-              });
-            },
+           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
+            onPressed: () {
+              Navigator.pop(context, true); // Marks Easy as finished
+            },
             child: const Text(
-              "Play Again",
-              style:
-                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              "Finish",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
         ],

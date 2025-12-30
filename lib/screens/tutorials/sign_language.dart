@@ -1,40 +1,37 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class SingAlongAdventure extends StatelessWidget {
-  const SingAlongAdventure({Key? key}) : super(key: key);
+class SignLanguage extends StatelessWidget {
+  const SignLanguage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final List<String> alphabets =
         List.generate(26, (index) => String.fromCharCode(97 + index)); // a-z
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        // 🌈 Background Image
-        Image.asset("assets/images/playmenu.png", fit: BoxFit.fill),
-
-        // 💨 Glass Effect Overlay
-        BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            color: Colors.white.withOpacity(0.1), // semi-transparent glass
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text('Sign Language', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        backgroundColor: Colors.white.withOpacity(0.1),
+        elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(color: Colors.transparent),
           ),
         ),
+      ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background
+          Image.asset("assets/images/playmenu.png", fit: BoxFit.fill),
 
-        // 🏗 Scaffold on top for AppBar & Grid
-        Scaffold(
-          backgroundColor: Colors.transparent, // Make Scaffold transparent
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            title: const Text('Sign Language', style: TextStyle(color: Colors.white)),
-            centerTitle: true,
-            backgroundColor: const Color.fromARGB(129, 0, 0, 0),
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white), // back button white
-          ),
-          body: Padding(
+          // Alphabet Grid
+          Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
             child: GridView.builder(
               itemCount: alphabets.length,
@@ -66,12 +63,11 @@ class SingAlongAdventure extends StatelessWidget {
               },
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
-
 class AlphabetScreen extends StatelessWidget {
   final String letter;
 
@@ -80,13 +76,7 @@ class AlphabetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(letter.toUpperCase()),
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      backgroundColor: Colors.black, // optional: dark background for video
+      appBar: AppBar(title: Text(letter.toUpperCase())),
       body: Center(
         child: Image.asset(
           'assets/images/sign_tutorial/asl_vid/${letter.toUpperCase()}.mp4',

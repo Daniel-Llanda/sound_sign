@@ -325,28 +325,24 @@ class _THardScreenState extends State<THardScreen> {
             style: const TextStyle(fontSize: 22, color: Colors.white),
           ),
           const SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                score = 0;
-                currentIndex = 0;
-                userInput = "";
-                showInstructions = true;
-                _generateQuiz();
-                _generateChoices();
-              });
-            },
+           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
+            onPressed: () {
+              Navigator.pop(context, true); // Marks Easy as finished
+            },
             child: const Text(
-              "Play Again",
+              "Finish",
               style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
         ],

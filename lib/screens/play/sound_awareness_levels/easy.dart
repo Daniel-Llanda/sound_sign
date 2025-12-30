@@ -1,188 +1,374 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
-class Level1Screen extends StatefulWidget {
-  const Level1Screen({super.key});
+// ================= MODEL =================
+class SoundInfo {
+  final String title;
+  final String imagePath;
+  final String soundPath;
 
-  @override
-  State<Level1Screen> createState() => _Level1ScreenState();
+  const SoundInfo({
+    required this.title,
+    required this.imagePath,
+    required this.soundPath,
+  });
 }
 
-class _Level1ScreenState extends State<Level1Screen> {
-  final List<String> allLetters = List.generate(
-    26,
-    (i) => String.fromCharCode(65 + i),
-  ); // A–Z
-  late List<String> quizLetters;
+// ================= DATA =================
+final List<SoundInfo> allSounds = [
+  SoundInfo(
+    title: 'Ambulance Siren',
+    imagePath: 'assets/images/ambulance.png',
+    soundPath: 'sounds/ambulance.mp3',
+  ),
+  SoundInfo(
+    title: 'Fire Alarm',
+    imagePath: 'assets/images/alarm.png',
+    soundPath: 'sounds/alarm.mp3',
+  ),
+  SoundInfo(
+    title: 'Smoke Detector',
+    imagePath: 'assets/images/smoke_detector.png',
+    soundPath: 'sounds/smoke_detector.mp3',
+  ),
+  SoundInfo(
+    title: 'Doorbell',
+    imagePath: 'assets/images/doorbell.png',
+    soundPath: 'sounds/doorbell.mp3',
+  ),
+  SoundInfo(
+    title: 'Phone Ringing',
+    imagePath: 'assets/images/telephone_call.png',
+    soundPath: 'sounds/telephone_ring.mp3',
+  ),
+  SoundInfo(
+    title: 'Car Horn',
+    imagePath: 'assets/images/horn.png',
+    soundPath: 'sounds/horn.mp3',
+  ),
+  SoundInfo(
+    title: 'Baby Crying',
+    imagePath: 'assets/images/baby.png',
+    soundPath: 'sounds/baby.mp3',
+  ),
+  SoundInfo(
+    title: 'Alarm Clock',
+    imagePath: 'assets/images/alarm_clock.png',
+    soundPath: 'sounds/alarm_clock.mp3',
+  ),
+];
+
+// ================= SCREEN =================
+class SoundAwarenessEasy extends StatefulWidget {
+  const SoundAwarenessEasy({super.key});
+
+  @override
+  State<SoundAwarenessEasy> createState() => _SoundAwarenessEasyState();
+}
+
+class _SoundAwarenessEasyState extends State<SoundAwarenessEasy> {
+  final AudioPlayer player = AudioPlayer();
+
+  bool showInstructions = true;
+
+  late List<SoundInfo> quizSounds;
+  late List<SoundInfo> choices;
+
   int currentIndex = 0;
   int score = 0;
-  String userAnswer = "";
-  List<String> userAnswers = [];
-
-  final TextEditingController _controller =
-      TextEditingController(); // ✅ Controller
 
   @override
   void initState() {
     super.initState();
     _generateQuiz();
+    _generateChoices();
   }
+
+
+
 
   void _generateQuiz() {
-    allLetters.shuffle(Random());
-    quizLetters = allLetters.take(5).toList(); // Pick 5 random letters
+    quizSounds = List.from(allSounds)..shuffle(Random());
+    quizSounds = quizSounds.take(5).toList();
   }
 
-  void _submitAnswer() {
-    if (userAnswer.trim().isEmpty) return;
+  void _generateChoices() {
+    SoundInfo correct = quizSounds[currentIndex];
+    List<SoundInfo> temp = List.from(allSounds)..remove(correct);
+    temp.shuffle(Random());
 
-    String correct = quizLetters[currentIndex];
-    userAnswers.add(userAnswer.toUpperCase());
+    choices = temp.take(3).toList();
+    choices.add(correct);
+    choices.shuffle(Random());
 
-    if (userAnswer.toUpperCase() == correct) {
+    // 🔊 Play sound ONLY during quiz
+    if (!showInstructions) {
+      player.stop();
+      player.play(AssetSource(correct.soundPath));
+    }
+  }
+
+
+  void _selectAnswer(SoundInfo selected) {
+    SoundInfo correct = quizSounds[currentIndex];
+
+    if (selected.title == correct.title) {
       score++;
     }
 
     setState(() {
-      userAnswer = "";
-      _controller.clear(); // ✅ Clears input field
       currentIndex++;
+      if (currentIndex < quizSounds.length) {
+        _generateChoices();
+      } else {
+        player.stop();
+      }
     });
   }
 
   @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
+  // ================= UI =================
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // White background
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue,
+        title: const Text("Sound Awareness"),
+        centerTitle: true,
         foregroundColor: Colors.white,
-        title: const Text("Level 1 - Quiz"),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue, Colors.lightBlueAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child:
-            currentIndex < quizLetters.length
-                ? Row(
-                  children: [
-                    // Left Side - Image
-                    Expanded(
-                      flex: 1,
-                      child: Center(
-                        child: Image.asset(
-                          "assets/images/sign_language/${quizLetters[currentIndex].toLowerCase()}.png",
-                          height: 500,
-                          width: 500,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
+      body: Stack(
+        children: [
+          // Gradient background
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue, Colors.lightBlueAccent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
 
-                    // Right Side - Question + Input + Button
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              "Question ${currentIndex + 1} of ${quizLetters.length}",
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 20),
-                            TextField(
-                              controller: _controller, // ✅ Added
-                              onChanged: (value) => userAnswer = value,
-                              textAlign: TextAlign.center,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: "Enter the letter",
-                              ),
-                            ),
+          // Texture overlay
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.05,
+              child: Image.asset(
+                "assets/images/playmenu.png",
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
 
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.lightBlue,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                              ),
-                              onPressed: _submitAnswer,
-                              child: const Text("Submit"),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-                : _buildResult(),
+          // Main content
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: showInstructions
+                ? _buildInstructions()
+                : currentIndex < quizSounds.length
+                    ? _buildQuiz()
+                    : _buildResult(),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildResult() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          "Quiz Completed!",
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          "Your Score: $score / ${quizLetters.length}",
-          style: const TextStyle(fontSize: 20),
-        ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: ListView.builder(
-            itemCount: quizLetters.length,
-            itemBuilder: (context, index) {
-              String correct = quizLetters[index];
-              String user = userAnswers[index];
-              return ListTile(
-                leading: Image.asset(
-                  "assets/images/sign_language/$correct.jpg",
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.contain,
-                ),
-                title: Text("Correct: $correct"),
-                subtitle: Text("Your Answer: $user"),
-                trailing: Icon(
-                  user == correct ? Icons.check : Icons.close,
-                  color: user == correct ? Colors.green : Colors.red,
-                ),
-              );
+  // ================= INSTRUCTIONS =================
+  Widget _buildInstructions() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            "How to Play",
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            "• Listen to the sound\n"
+            "• Look at the image\n"
+            "• Choose the correct sound\n"
+            "• Tap the answer to continue",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            onPressed: () {
+              setState(() {
+                showInstructions = false;
+              });
+
+              // 🔊 Play first quiz sound
+              player.stop();
+              player.play(AssetSource(quizSounds[currentIndex].soundPath));
             },
+
+
+            child: const Text(
+              "Start Quiz",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================= QUIZ =================
+  Widget _buildQuiz() {
+    SoundInfo current = quizSounds[currentIndex];
+
+    return Row(
+      children: [
+        Expanded(
+          child: Center(
+            child: GestureDetector(
+              onTap: () {
+                player.play(AssetSource(current.soundPath));
+              },
+              child: Image.asset(
+                current.imagePath,
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.lightBlue,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Question ${currentIndex + 1} of ${quizSounds.length}",
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 30),
+              GridView.builder(
+                shrinkWrap: true,
+                itemCount: choices.length,
+                gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 15,
+                  crossAxisSpacing: 15,
+                  childAspectRatio: 2,
+                ),
+                itemBuilder: (context, index) {
+                  return ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () => _selectAnswer(choices[index]),
+                    child: Text(
+                      choices[index].title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-          onPressed: () {
-            setState(() {
-              score = 0;
-              currentIndex = 0;
-              userAnswers.clear();
-              _generateQuiz();
-            });
-          },
-          child: const Text("Play Again"),
         ),
       ],
+    );
+  }
+
+  // ================= RESULT =================
+  Widget _buildResult() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            "Quiz Completed!",
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 15),
+          Text(
+            "Your Score: $score / ${quizSounds.length}",
+            style: const TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 30),
+         ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(context, true); // Marks Easy as finished
+            },
+            child: const Text(
+              "Finish",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

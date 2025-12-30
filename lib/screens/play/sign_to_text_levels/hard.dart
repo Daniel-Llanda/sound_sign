@@ -292,18 +292,24 @@ class _HardScreenState extends State<HardScreen> {
           Text("Your Score: $score / ${quizWords.length}", style: const TextStyle(fontSize: 22, color: Colors.white)),
           const SizedBox(height: 30),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
             onPressed: () {
-              setState(() {
-                score = 0;
-                currentIndex = 0;
-                userInput = "";
-                showInstructions = true;
-                _generateQuiz();
-                _generateChoices();
-              });
+              Navigator.pop(context, true); // Marks Easy as finished
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16)),
-            child: const Text("Play Again", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+            child: const Text(
+              "Finish",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),

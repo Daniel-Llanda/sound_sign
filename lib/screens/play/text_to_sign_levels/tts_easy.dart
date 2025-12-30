@@ -267,27 +267,19 @@ class _EasyScreenState extends State<TEasyScreen> {
             ),
           ),
           const SizedBox(height: 30),
-          ElevatedButton(
+           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
             onPressed: () {
-              setState(() {
-                score = 0;
-                currentIndex = 0;
-                userAnswers.clear();
-                showInstructions = true;
-                _generateQuiz();
-                _generateChoices();
-              });
+              Navigator.pop(context, true); // Marks Easy as finished
             },
             child: const Text(
-              "Play Again",
+              "Finish",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

@@ -35,55 +35,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showAudioDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: const Text(
+          "Audio",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Adjust the volume:"),
+            Slider(
+              value: _currentVolume,
+              min: 0,
+              max: 1,
+              divisions: 100, // smoother sliding
+              label: "${(_currentVolume * 100).round()}%",
+              onChanged: (value) {
+                setState(() => _currentVolume = value);
+                VolumeController().setVolume(value); // updates in real-time
+              },
             ),
-            title: const Text(
-              "Audio/Sound",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text("Adjust the volume:"),
-                Slider(
-                  value: _currentVolume,
-                  min: 0,
-                  max: 1,
-                  divisions: 10,
-                  label: "${(_currentVolume * 100).round()}%",
-                  onChanged: (value) {
-                    setState(() => _currentVolume = value);
-                    VolumeController().setVolume(value);
-                  },
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                child: const Text("Close"),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Navigator.pop(context),
           ),
+        ],
+      ),
     );
   }
 
   Widget _buildButton(BuildContext context, String title, String message) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.25,
+      width: MediaQuery.of(context).size.width * 0.4,
       child: ElevatedButton(
         onPressed: () {
-          if (title == "Audio/Sound") {
+          if (title == "Audio") {
             _showAudioDialog(context);
           } else {
             _showDialog(context, title, message);
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.lightBlue,
+          backgroundColor: Colors.lightBlue, // solid color
           padding: const EdgeInsets.symmetric(vertical: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -97,35 +96,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+
   void _showDialog(BuildContext context, String title, String message) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            title: Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: const Text("Close"),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Navigator.pop(context),
           ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      ["Sign Language", "Sign language settings and info go here."],
-      ["Audio/Sound", "Audio and sound settings go here."],
-      ["Keyboard", "Keyboard settings and shortcuts go here."],
+      ["Audio", "Audio settings go here."],
       [
         "About Us",
         "This app was developed to make learning fun and interactive!",
@@ -137,33 +134,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: const Text('Settings', style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: Colors.white.withOpacity(0.1),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.white,
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(color: Colors.transparent),
-          ),
-        ),
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // Background image
           Image.asset('assets/images/settingsmenu.png', fit: BoxFit.fill),
+
+          // Glass effect overlay for whole screen
+          ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              child: Container(
+                color: Colors.black.withOpacity(0.2), // semi-transparent overlay
+              ),
+            ),
+          ),
+
+          // Content on top
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Welcome to Settings',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
                 const SizedBox(height: 40),
                 ...buttons.map(
                   (b) => Padding(
