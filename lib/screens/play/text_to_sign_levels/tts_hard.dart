@@ -13,6 +13,8 @@ class _THardScreenState extends State<THardScreen> {
 
   final List<String> allLetters =
       List.generate(26, (i) => String.fromCharCode(65 + i));
+  List<String> userAnswers = []; // Track user answers
+
 
   final List<String> words = [
     "APPLE", "HOUSE", "PLANT", "TRAIN", "SWEET",
@@ -74,7 +76,12 @@ class _THardScreenState extends State<THardScreen> {
   void _submitAnswer() {
     if (userInput.length != 5) return;
 
-    if (userInput == quizWords[currentIndex]) score++;
+    // Save the user's answer
+    userAnswers.add(userInput);
+
+    if (userInput == quizWords[currentIndex]) {
+      score++;
+    }
 
     Future.delayed(const Duration(milliseconds: 400), () {
       setState(() {
@@ -86,6 +93,7 @@ class _THardScreenState extends State<THardScreen> {
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -269,25 +277,25 @@ class _THardScreenState extends State<THardScreen> {
               ),
               const SizedBox(height: 20),
               SizedBox(
-                width: 400,
+                width: 400, // you can keep this or remove it to use full width
                 child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: choices.length,
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 5,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 60, // smaller boxes
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 1, // square boxes
                   ),
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () => _selectLetter(choices[index]),
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(4), // smaller padding
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8), // smaller radius
                         ),
                         child: Image.asset(
                           "assets/images/sign_tutorial/asl_img/${choices[index].toLowerCase()}.png",
@@ -298,6 +306,7 @@ class _THardScreenState extends State<THardScreen> {
                   },
                 ),
               ),
+
             ],
           ),
         ),
@@ -308,45 +317,68 @@ class _THardScreenState extends State<THardScreen> {
 
   // ================= RESULT =================
   Widget _buildResult() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            "Quiz Completed!",
-            style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            "Your Score: $score / ${quizWords.length}",
-            style: const TextStyle(fontSize: 22, color: Colors.white),
-          ),
-          const SizedBox(height: 30),
-           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(context, true); // Marks Easy as finished
-            },
-            child: const Text(
-              "Finish",
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Quiz Completed!",
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              "Your Score: $score / ${quizWords.length}",
+              style: const TextStyle(fontSize: 22, color: Colors.white),
+            ),
+            const SizedBox(height: 30),
+            
+            // Show wrong answers
+            Column(
+              children: List.generate(quizWords.length, (index) {
+                bool isCorrect = userAnswers[index] == quizWords[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(
+                    isCorrect
+                        ? "${index + 1}. Correct: ${quizWords[index]}"
+                        : "${index + 1}. Your answer: ${userAnswers[index]} ❌ | Correct: ${quizWords[index]}",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: isCorrect ? Colors.greenAccent : Colors.redAccent,
+                    ),
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context, true); // Marks Easy as finished
+              },
+              child: const Text(
+                "Finish",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+
 }

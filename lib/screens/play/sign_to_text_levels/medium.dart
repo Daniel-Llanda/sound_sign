@@ -13,6 +13,8 @@ class _MediumScreenState extends State<MediumScreen> {
 
   final List<String> allLetters =
       List.generate(26, (i) => String.fromCharCode(65 + i));
+  List<String> userAnswers = [];
+
 
   final List<String> words = [
     "DOG", "CAT", "SUN", "BAT", "HAT", "CAR", "PEN", "BOX",
@@ -75,16 +77,23 @@ class _MediumScreenState extends State<MediumScreen> {
     if (userInput.length != 3) return;
 
     String correct = quizWords[currentIndex];
+
+    // Save user answer
+    userAnswers.add(userInput);
+
     if (userInput == correct) score++;
 
     Future.delayed(const Duration(milliseconds: 500), () {
       setState(() {
         userInput = "";
         currentIndex++;
-        if (currentIndex < quizWords.length) _generateChoices();
+        if (currentIndex < quizWords.length) {
+          _generateChoices();
+        }
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -325,49 +334,97 @@ class _MediumScreenState extends State<MediumScreen> {
 
   // ================= RESULT =================
   Widget _buildResult() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            "Quiz Completed!",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            "Your Score: $score / ${quizWords.length}",
-            style: const TextStyle(
-              fontSize: 22,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 30),
-           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(context, true); // Marks Easy as finished
-            },
-            child: const Text(
-              "Finish",
+    // Collect wrong answers
+    List<Map<String, String>> wrongAnswers = [];
+
+    for (int i = 0; i < quizWords.length; i++) {
+      if (userAnswers[i] != quizWords[i]) {
+        wrongAnswers.add({
+          "question": (i + 1).toString(),
+          "correct": quizWords[i],
+          "your": userAnswers[i],
+        });
+      }
+    }
+
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Quiz Completed!",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            Text(
+              "Your Score: $score / ${quizWords.length}",
+              style: const TextStyle(
+                fontSize: 22,
+                color: Colors.white,
+              ),
+            ),
+
+            // ===== WRONG ANSWERS =====
+            if (wrongAnswers.isNotEmpty) ...[
+              const SizedBox(height: 25),
+              const Text(
+                "Wrong Answers",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.redAccent,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              ...wrongAnswers.map((item) {
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  child: ListTile(
+                    leading: const Icon(Icons.close, color: Colors.red),
+                    title: Text(
+                      "Question ${item["question"]}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      "Your answer: ${item["your"]}\nCorrect answer: ${item["correct"]}",
+                    ),
+                  ),
+                );
+              }).toList(),
+            ],
+
+            const SizedBox(height: 25),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text(
+                "Finish",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }

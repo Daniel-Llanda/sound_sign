@@ -246,49 +246,134 @@ class _EasyScreenState extends State<TEasyScreen> {
 
   // ================= RESULT =================
   Widget _buildResult() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            "Quiz Completed!",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            "Your Score: $score / ${quizLetters.length}",
-            style: const TextStyle(
-              fontSize: 22,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 30),
-           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(context, true); // Marks Easy as finished
-            },
-            child: const Text(
-              "Finish",
+    // Collect wrong answers
+    List<Map<String, String>> wrongAnswers = [];
+
+    for (int i = 0; i < quizLetters.length; i++) {
+      if (userAnswers[i] != quizLetters[i]) {
+        wrongAnswers.add({
+          "question": (i + 1).toString(),
+          "correct": quizLetters[i],
+          "your": userAnswers[i],
+        });
+      }
+    }
+
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Quiz Completed!",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            Text(
+              "Your Score: $score / ${quizLetters.length}",
+              style: const TextStyle(
+                fontSize: 22,
+                color: Colors.white,
+              ),
+            ),
+
+            // ===== WRONG ANSWERS =====
+            if (wrongAnswers.isNotEmpty) ...[
+              const SizedBox(height: 25),
+              const Text(
+                "Wrong Answers",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.redAccent,
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              ...wrongAnswers.map((item) {
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Question ${item["question"]}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            // ❌ User answer
+                            Column(
+                              children: [
+                                const Text("Your Answer",
+                                    style: TextStyle(color: Colors.red)),
+                                const SizedBox(height: 6),
+                                Image.asset(
+                                  "assets/images/sign_tutorial/asl_img/${item["your"]!.toLowerCase()}.png",
+                                  height: 70,
+                                ),
+                              ],
+                            ),
+
+                            // ✅ Correct answer
+                            Column(
+                              children: [
+                                const Text("Correct",
+                                    style: TextStyle(color: Colors.green)),
+                                const SizedBox(height: 6),
+                                Image.asset(
+                                  "assets/images/sign_tutorial/asl_img/${item["correct"]!.toLowerCase()}.png",
+                                  height: 70,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ],
+
+            const SizedBox(height: 25),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text(
+                "Finish",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }

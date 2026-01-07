@@ -237,50 +237,98 @@ class _EasyScreenState extends State<EasyScreen> {
 
   // ================= RESULT =================
   Widget _buildResult() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            "Quiz Completed!",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            "Your Score: $score / ${quizLetters.length}",
-            style: const TextStyle(
-              fontSize: 22,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 30),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(context, true); // Marks Easy as finished
-            },
-            child: const Text(
-              "Finish",
+    // Get wrong answers
+    List<Map<String, String>> wrongAnswers = [];
+
+    for (int i = 0; i < quizLetters.length; i++) {
+      if (userAnswers[i] != quizLetters[i]) {
+        wrongAnswers.add({
+          "question": (i + 1).toString(),
+          "correct": quizLetters[i],
+          "your": userAnswers[i],
+        });
+      }
+    }
+
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Quiz Completed!",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-          ),
+            const SizedBox(height: 10),
+            Text(
+              "Your Score: $score / ${quizLetters.length}",
+              style: const TextStyle(
+                fontSize: 22,
+                color: Colors.white,
+              ),
+            ),
 
-        ],
+            // ===== SHOW WRONG ANSWERS =====
+            if (wrongAnswers.isNotEmpty) ...[
+              const SizedBox(height: 25),
+              const Text(
+                "Wrong Answers",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.redAccent,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              ...wrongAnswers.map((item) {
+                return Card(
+                  color: Colors.white,
+                  margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                  child: ListTile(
+                    leading: const Icon(Icons.close, color: Colors.red),
+                    title: Text(
+                      "Question ${item["question"]}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      "Your answer: ${item["your"]}\nCorrect answer: ${item["correct"]}",
+                    ),
+                  ),
+                );
+              }).toList(),
+            ],
+
+            const SizedBox(height: 25),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text(
+                "Finish",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }

@@ -13,6 +13,8 @@ class _MediumScreenState extends State<TMediumScreen> {
 
   final List<String> allLetters =
       List.generate(26, (i) => String.fromCharCode(65 + i));
+  List<String> userAnswers = []; // Track user inputs
+
 
   final List<String> words = [
     "DOG", "CAT", "SUN", "BAT", "HAT", "CAR", "PEN", "BOX",
@@ -74,6 +76,9 @@ class _MediumScreenState extends State<TMediumScreen> {
   void _submitAnswer() {
     if (userInput.length != 3) return;
 
+    // Save the user's answer
+    userAnswers.add(userInput);
+
     String correct = quizWords[currentIndex];
     if (userInput == correct) score++;
 
@@ -87,6 +92,7 @@ class _MediumScreenState extends State<TMediumScreen> {
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +158,7 @@ class _MediumScreenState extends State<TMediumScreen> {
           ),
           const SizedBox(height: 20),
           const Text(
-            "• Look SSSSat the word shown\n"
+            "• Look at the word shown\n"
             "• Tap the correct sign images\n"
             "• Build the 3-letter word\n"
             "• Press Submit to check",
@@ -289,36 +295,33 @@ class _MediumScreenState extends State<TMediumScreen> {
                 shrinkWrap: true,
                 itemCount: choices.length,
                 physics: const NeverScrollableScrollPhysics(),
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 1.1,
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 100, // Max width of each box
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 1,      // Square boxes
                 ),
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () => _selectLetter(choices[index]),
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(
-                        child: SizedBox(
-                          height: 70,
-                          width: 70,
-                          child: Image.asset(
-                            "assets/images/sign_tutorial/asl_img/${choices[index].toLowerCase()}.png",
-                            fit: BoxFit.contain,
-                          ),
+                        child: Image.asset(
+                          "assets/images/sign_tutorial/asl_img/${choices[index].toLowerCase()}.png",
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
                   );
                 },
               ),
+
+
+
             ],
           ),
         ),
@@ -328,49 +331,73 @@ class _MediumScreenState extends State<TMediumScreen> {
 
   // ================= RESULT =================
   Widget _buildResult() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            "Quiz Completed!",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            "Your Score: $score / ${quizWords.length}",
-            style: const TextStyle(
-              fontSize: 22,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 30),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(context, true); // Marks Easy as finished
-            },
-            child: const Text(
-              "Finish",
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Quiz Completed!",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 15),
+            Text(
+              "Your Score: $score / ${quizWords.length}",
+              style: const TextStyle(
+                fontSize: 22,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            // Show wrong answers
+            Column(
+              children: List.generate(quizWords.length, (index) {
+                bool isCorrect = userAnswers[index] == quizWords[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(
+                    isCorrect
+                        ? "${index + 1}. Correct: ${quizWords[index]}"
+                        : "${index + 1}. Your answer: ${userAnswers[index]} ❌ | Correct: ${quizWords[index]}",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: isCorrect ? Colors.greenAccent : Colors.redAccent,
+                    ),
+                  ),
+                );
+              }),
+            ),
+
+            const SizedBox(height: 30),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context, true); // Marks Medium as finished
+              },
+              child: const Text(
+                "Finish",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }
